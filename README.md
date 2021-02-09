@@ -1,1 +1,2 @@
-# XClip-client
+# XClip-clients
+[Server](https://github.com/RyoLee/XClip)
