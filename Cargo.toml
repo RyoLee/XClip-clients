@@ -1,6 +1,6 @@
 [package]
 name = "xclip"
-version = "1.0.0"
+version = "1.0.1"
 description = "A Cross-Platform Clipboard"
 documentation = "https://github.com/RyoLee/XClip-cliente"
 license = "BSD 3-Clause"
@@ -15,7 +15,7 @@ codegen-units = 1
 
 [dependencies]
 base64 = "0.13.0"
-curl = "0.4.34"
+ureq = "2.4.0"
 md5 ="0.7.0"
-rust-ini="0.16.1"
-clipboard="0.5.0"
+rust-ini = "0.16.1"
+clipboard = "0.5.0"
