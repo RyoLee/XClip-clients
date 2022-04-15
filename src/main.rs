@@ -9,12 +9,24 @@ use md5::compute;
 use std::env;
 use std::io;
 use std::path::PathBuf;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn get_cfg_path() -> io::Result<PathBuf> {
     let mut dir = env::current_exe()?;
     dir.pop();
     dir.push("xclip.ini");
     Ok(dir)
+}
+fn get_token(password: &str) -> Result<String, std::io::Error> {
+    let mut _hash = format!("{:x}", compute(password.as_bytes()));
+    let ts = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    let salt = (ts - ts % 10) / 10;
+    _hash += &salt.to_string();
+    _hash = format!("{:x}", compute(_hash.as_bytes()));
+    return Ok(_hash.to_string());
 }
 
 fn main() -> Result<(), ureq::Error> {
@@ -38,11 +50,8 @@ fn main() -> Result<(), ureq::Error> {
     return Ok(());
 }
 fn get(url: &str, password: &str) -> Result<String, ureq::Error> {
-    let password_hash = format!("{:x}", compute(password.as_bytes()));
-    let body: String = ureq::get(url)
-        .set("password", &password_hash)
-        .call()?
-        .into_string()?;
+    let token = get_token(password).unwrap();
+    let body: String = ureq::get(url).set("token", &token).call()?.into_string()?;
     let db = decode(&body.to_string()).unwrap();
     let res = String::from_utf8_lossy(&db);
     println!("{}", res.to_string());
@@ -51,12 +60,12 @@ fn get(url: &str, password: &str) -> Result<String, ureq::Error> {
     return Ok(res.to_string());
 }
 fn set(url: &str, password: &str) -> Result<String, ureq::Error> {
-    let password_hash = format!("{:x}", compute(password.as_bytes()));
+    let token = get_token(password).unwrap();
     let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
     let raw_value = ctx.get_contents().unwrap();
     let value = encode(raw_value);
     let body: String = ureq::post(url)
-        .set("password", &password_hash)
+        .set("token", &token)
         .send_form(&[("value", &value)])?
         .into_string()?;
     return Ok(body);
