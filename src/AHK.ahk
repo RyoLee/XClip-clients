@@ -1,6 +1,9 @@
 SC029:: {
     send("``")
 }
++SC029:: {
+    send("~")
+}
 SC029 & C:: {
     Run("xclip.exe c")
     send("^c")
