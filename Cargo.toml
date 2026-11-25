@@ -1,21 +1,48 @@
 [package]
 name = "xclip"
-version = "1.0.1"
+version = "2.0.0"
 description = "A Cross-Platform Clipboard"
 documentation = "https://github.com/RyoLee/XClip-cliente"
 license = "BSD 3-Clause"
 readme = "README.md"
 keywords = ["XClip", "Clipboard", "Cross-Platform"]
 authors = ["Ryo <516127941@qq.com>"]
-edition = "2018"
+edition = "2021"
+build = "build.rs"
+
+[lib]
+name = "xclip"
+path = "src/lib.rs"
+
+[[bin]]
+name = "xclip"
+path = "src/main.rs"
 
 [profile.release]
 lto = true
 codegen-units = 1
+opt-level = "z"
+strip = true
 
 [dependencies]
-base64 = "0.13.0"
-ureq = "2.4.0"
-md5 ="0.7.0"
-rust-ini = "0.16.1"
-clipboard = "0.5.0"
+base64 = "0.22"
+ureq = "2.6"
+md-5 = "0.10"
+rust-ini = "0.21"
+log = "0.4"
+
+[target.'cfg(windows)'.dependencies]
+arboard = { version = "3", default-features = false }
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_System_Threading",
+    "Win32_Security",
+    "Win32_System_DataExchange",
+    "Win32_System_Memory",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Registry",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Shell",
+    "Win32_Graphics_Gdi",
+] }
